@@ -1,80 +1,73 @@
-# Linux Storage & Backup Lab 💾
-_A real-world lab to master Linux storage management, LVM, `rsync`, and reliable backup/restore operations._
+# Linux Storage & Backup Lab
+Linux storage management, LVM, rsync and backup/restore.
+
+## Objective
+
+Full backup/recovery:
+
+- LVM
+- rsync incremental backups
+- Mount restore points
+- File deletion and recovery
 
 ---
 
-## 📌 Objective
+## Skills
 
-This lab simulates a full backup-and-recovery workflow using:
-
-- **LVM** (Logical Volume Manager)
-- **`rsync`** for incremental backups
-- Mount control for restore points
-- Real-world file deletion and recovery
-
-Great practice for anyone preparing for **CompTIA Linux+ (XK0-005)** or day-to-day sysadmin roles.
-
----
-
-## 🧠 Skills Demonstrated
-
-- Create and manage loopback storage with `dd` and `losetup`
-- Provision LVM: PV ➜ VG ➜ LV
-- Format and mount volumes (`mkfs`, `mount`)
-- Perform safe backups and restores with `rsync`
+- Create and manage loopback storage with dd and losetup
+- Provision LVM
+- Format and mount volumes
+- Perform safe backups and restores with rsync
 - Troubleshoot access issues and restore deleted data
 
 ---
 
-## 🖥️ Environment
+## Environment
 
 | Component | Version / Tool              |
 |-----------|-----------------------------|
-| OS        | Fedora 41 (workstation)     |
+| OS        | Fedora                      |
 | Shell     | Bash                        |
-| Key CLI   | `losetup`, `lvm`, `rsync`, `mount`, `dd`, `df`, `lsblk` |
+| Key CLI   | losetup, lvm, rsync, mount, dd, df, lsblk |
 
 ---
 
-## 🛠️ Tasks Performed
+## Tasks
 
-### 🧱 Disk Provisioning & LVM Setup
-
-```bash
-# 1️⃣  Create a 1 GB “disk” file
+1. Create a 1 GB “disk” file
+```
 sudo dd if=/dev/zero of=/opt/backup-disk.img bs=1M count=1024
-
-# 2️⃣  Attach it as /dev/loopX
+```
+3. Attach it as /dev/loopX
+```
 sudo losetup -fP /opt/backup-disk.img
-
-# 3️⃣  Create the Physical Volume (replace X with actual loop number)
+```
+4. Create the Physical Volume (replace X with actual loop number)
+```
 sudo pvcreate /dev/loopX
-
-# 4️⃣  Create VG & LV
+```
+5. Create VG & LV
+```
 sudo vgcreate backup_vg /dev/loopX
 sudo lvcreate -L 900M -n backup_lv backup_vg
-
-# 5️⃣  Format & mount
+```
+6. Format & mount
+```
 sudo mkfs.ext4 /dev/backup_vg/backup_lv
 sudo mkdir -p /mnt/backup
 sudo mount /dev/backup_vg/backup_lv /mnt/backup
-
-sudo mkdir -p /opt/projects
+```
+7. sudo mkdir -p /opt/projects
+```
 echo "Alpha Project" | sudo tee /opt/projects/alpha.txt
 echo "Beta  Project" | sudo tee /opt/projects/beta.txt
-
 sudo rsync -avh /opt/projects/ /mnt/backup/
-
 sudo find /opt/projects -type f -exec rm -f {} +
-
 sudo rsync -avh /mnt/backup/ /opt/projects/ | sudo tee outputs/restore-log.txt
 ```
-
 ---
 
----
-
-## 📄 Output Logs
+## Output
 
 | File                            | Description                                    |
 |---------------------------------|------------------------------------------------|
@@ -84,7 +77,7 @@ sudo rsync -avh /mnt/backup/ /opt/projects/ | sudo tee outputs/restore-log.txt
 
 ## 📸 Screenshots
 
-### 🔍 Initial Setup & LVM Provisioning
+### Setup
 
 | Step | Description | Screenshot |
 |------|-------------|------------|
@@ -97,18 +90,18 @@ sudo rsync -avh /mnt/backup/ /opt/projects/ | sudo tee outputs/restore-log.txt
 
 ---
 
-### 💾 Backup & Restore Process
+### Backup
 
 | Phase | Description | Screenshot |
 |-------|-------------|------------|
-| ✅ Backup Complete | Files `alpha.txt` and `beta.txt` successfully backed up using `rsync` | ![Backup Success](images/rsync-backup-success.png) |
-| ❌ Simulated Failure | Files deleted from `/opt/projects` to simulate data loss | ![Simulated Data Loss](images/data-loss-simulated.png) |
-| 🔁 Restore Log | Output of the restore process captured using `tee` | ![Restore Log Output](images/restore-log-output.png) |
-| 🎯 Recovery Verified | Files restored from backup and visible in `/opt/projects` | ![Data Restored](images/data-restore-success.png) |
+| Backup Complete | Files `alpha.txt` and `beta.txt` successfully backed up using `rsync` | ![Backup Success](images/rsync-backup-success.png) |
+| Simulated Failure | Files deleted from `/opt/projects` to simulate data loss | ![Simulated Data Loss](images/data-loss-simulated.png) |
+| Restore Log | Output of the restore process captured using `tee` | ![Restore Log Output](images/restore-log-output.png) |
+| Recovery Verified | Files restored from backup and visible in `/opt/projects` | ![Data Restored](images/data-restore-success.png) |
 
 ---
 
-### 📋 Rsync Restore Log Output
-Output of the `rsync` command during the restore process, captured using `tee`.
+### Rsync Log
+Output of the `rsync` command during the restore process captured using `tee`.
 
 ![Rsync Restore Log Output](images/restore-log-output.png)
