@@ -1,4 +1,4 @@
-# Linux Storage & Backup Lab
+# Linux Storage/Backup Lab
 Linux storage management, LVM, rsync and backup/restore.
 
 ## Objective
